@@ -70,12 +70,6 @@ To run the project locally, follow these steps:
    yarn start
    ```
 
-Make sure to update the API URL in the frontend code if the backend is hosted elsewhere.
-
 ## Contributing
 
 Feel free to fork the repository, create issues, and submit pull requests to contribute to the development of Campus Chatter!
-
----
-
-You can customize the README further based on your project structure or any additional features you want to highlight.
