@@ -22,10 +22,11 @@ const LoginPage = () => {
         alert("Email not verified. Please check your email for verification.");
       } else {
         alert("Login successful! Redirecting to posts page.");
-        // navigation.navigate("Posts"); // Adjust navigation target as needed
+        navigation.navigate("Posts"); 
       }
     } catch (error) {
       setLoading(false);
+      console.error(error);
       alert("Login failed. Please try again.");
     }
   };

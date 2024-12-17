@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FlatList,
   View,
@@ -8,12 +8,15 @@ import {
   ActivityIndicator,
   SafeAreaView,
   Alert,
+  Image,
 } from "react-native";
 import { Avatar, Button, Card } from "react-native-elements";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import DOMPurify from "dompurify";
-import Linkify from "linkify-it";
+import RenderHTML from 'react-native-render-html';
+import { useWindowDimensions } from 'react-native';
+
+
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -24,6 +27,28 @@ const Posts = () => {
   const [allCommunities, setAllCommunities] = useState([]);
   const [page, setPage] = useState(1);
   const navigation = useNavigation();
+  const { width } = useWindowDimensions();
+
+  const tagsStyles = {
+  a: { color: 'blue', textDecorationLine: 'underline' },
+  b: { fontWeight: 'bold' },
+  i: { fontStyle: 'italic' },
+  img: {
+    width: '80%',
+    height: 'auto',
+  },
+  'span.ql-size-small': {
+    fontSize: 12,
+  },
+  'span.ql-size-large': {
+    fontSize: 20,
+  },
+  'span.ql-size-huge': {
+    fontSize: 28,
+  },
+};
+
+  
 
   const fetchPosts = async (pageParam = page) => {
     try {
@@ -76,39 +101,61 @@ const Posts = () => {
     fetchPosts();
   }, []);
 
-  const handlePostClick = (postId) => {
-    navigation.navigate("PostDetails", { postId });
-  };
+  // const renderers = {
+  //   img: (htmlAttribs) => {
+  //     const { src } = htmlAttribs;
+  //     return (
+  //       <Image
+  //         source={{ uri: src }}
+  //         style={{
+  //           width: width * 0.9, 
+  //           height: 'auto',
+  //           resizeMode: 'contain',
+  //         }}
+  //       />
+  //     );
+  //   },
+  // };
+
+  const renderersProps = {
+  img: {
+    enableExperimentalPercentWidth: true
+  }
+};
+
 
   const renderPost = ({ item: post }) => (
-    <TouchableOpacity
-      style={styles.postCard}
-      onPress={() => handlePostClick(post.post_id)}
-    >
-      <View style={styles.postHeader}>
-        <Avatar
-          rounded
-          source={{ uri: post.User.pic }}
-          size="medium"
-          containerStyle={styles.avatar}
-        />
-        <Text style={styles.postTitle}>{post.title}</Text>
-      </View>
-      <Text style={styles.postMeta}>{post.College.name}</Text>
-      <Text style={styles.postMeta}>@{post.User.username}</Text>
-      <Text style={styles.postContent}>{
-        Linkify().match(DOMPurify.sanitize(post.content))?.map((link) => (
-          <Text key={link.href} style={styles.link} onPress={() => openURL(link.href)}>
-            {link.text}
-          </Text>
-        )) || post.content
-      }</Text>
-      <View style={styles.postFooter}>
-        <Text style={styles.postLikes}>{post.likes} likes</Text>
-        <Text style={styles.postComments}>{post._count?.Comments} comments</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  <TouchableOpacity style={styles.postCard}>
+    <View style={styles.postHeader}>
+      <Avatar
+        rounded
+        source={{ uri: post.User.pic }}
+        size="medium"
+        containerStyle={styles.avatar}
+      />
+      <Text style={styles.postTitle}>{post.title}</Text>
+    </View>
+    <Text style={styles.postMeta}>{post.College.name}</Text>
+    <Text style={styles.postMeta}>@{post.User.username}</Text>
+    <View style={styles.container}>
+      <RenderHTML
+        contentWidth={width}
+        // renderers={renderers}
+
+        renderersProps={renderersProps}
+        source={{html:post.content}}
+        tagsStyles={tagsStyles}
+        defaultTextProps={{
+          selectable: true,
+        }}
+      />
+    </View>
+    <View style={styles.postFooter}>
+      <Text style={styles.postLikes}>{post.likes} likes</Text>
+      <Text style={styles.postComments}>{post._count?.Comments} comments</Text>
+    </View>
+  </TouchableOpacity>
+);
 
   if (loading) {
     return (
@@ -165,11 +212,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "gray",
   },
-  postContent: {
-    marginTop: 8,
-    fontSize: 16,
-    lineHeight: 24,
-  },
   postFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -191,6 +233,12 @@ const styles = StyleSheet.create({
   link: {
     color: "blue",
     textDecorationLine: "underline",
+  },
+  boldText: {
+    fontWeight: "bold",
+  },
+  italicText: {
+    fontStyle: "italic",
   },
 });
 
