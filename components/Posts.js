@@ -15,6 +15,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import RenderHTML from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
+import CreatePost from "./CreatePost";
 
 
 
@@ -157,6 +158,36 @@ const Posts = () => {
   </TouchableOpacity>
 );
 
+const handlePostSubmit = async ({ title, content, community }) => {
+  try {
+    const response = await axios.post(
+      '/api/post/create',
+      {
+        title: title,
+        content: content,
+        collegeId: community,
+      },
+      { withCredentials: true }
+    );
+
+    if (response.status === 200) {
+      // Show success message
+      Alert.alert("Post Created", "Your post has been created successfully!");
+
+      // You can trigger any additional UI updates or navigation here.
+      // For example, if using React Navigation, navigate to the post list or home screen.
+      // navigation.goBack();  // Use navigation if needed (with React Navigation)
+    } else {
+      // Handle unexpected response status
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  } catch (error) {
+    console.error("Error creating post:", error);
+    // Show error message
+    Alert.alert("Error", "There was an issue creating your post. Please try again.");
+  }
+};
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -167,6 +198,7 @@ const Posts = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <CreatePost communities={communities} onSubmit={handlePostSubmit} />
       <FlatList
         data={posts}
         renderItem={renderPost}
