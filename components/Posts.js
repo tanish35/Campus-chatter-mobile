@@ -13,11 +13,9 @@ import {
 import { Avatar, Button, Card } from "react-native-elements";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-import RenderHTML from 'react-native-render-html';
-import { useWindowDimensions } from 'react-native';
+import RenderHTML from "react-native-render-html";
+import { useWindowDimensions } from "react-native";
 import CreatePost from "./CreatePost";
-
-
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -31,25 +29,23 @@ const Posts = () => {
   const { width } = useWindowDimensions();
 
   const tagsStyles = {
-  a: { color: 'blue', textDecorationLine: 'underline' },
-  b: { fontWeight: 'bold' },
-  i: { fontStyle: 'italic' },
-  img: {
-    width: '80%',
-    height: 'auto',
-  },
-  'span.ql-size-small': {
-    fontSize: 12,
-  },
-  'span.ql-size-large': {
-    fontSize: 20,
-  },
-  'span.ql-size-huge': {
-    fontSize: 28,
-  },
-};
-
-  
+    a: { color: "blue", textDecorationLine: "underline" },
+    b: { fontWeight: "bold" },
+    i: { fontStyle: "italic" },
+    img: {
+      width: "80%",
+      height: "auto",
+    },
+    "span.ql-size-small": {
+      fontSize: 12,
+    },
+    "span.ql-size-large": {
+      fontSize: 20,
+    },
+    "span.ql-size-huge": {
+      fontSize: 28,
+    },
+  };
 
   const fetchPosts = async (pageParam = page) => {
     try {
@@ -109,7 +105,7 @@ const Posts = () => {
   //       <Image
   //         source={{ uri: src }}
   //         style={{
-  //           width: width * 0.9, 
+  //           width: width * 0.9,
   //           height: 'auto',
   //           resizeMode: 'contain',
   //         }}
@@ -119,74 +115,67 @@ const Posts = () => {
   // };
 
   const renderersProps = {
-  img: {
-    enableExperimentalPercentWidth: true
-  }
-};
-
+    img: {
+      enableExperimentalPercentWidth: true,
+    },
+  };
 
   const renderPost = ({ item: post }) => (
-  <TouchableOpacity style={styles.postCard}>
-    <View style={styles.postHeader}>
-      <Avatar
-        rounded
-        source={{ uri: post.User.pic }}
-        size="medium"
-        containerStyle={styles.avatar}
-      />
-      <Text style={styles.postTitle}>{post.title}</Text>
-    </View>
-    <Text style={styles.postMeta}>{post.College.name}</Text>
-    <Text style={styles.postMeta}>@{post.User.username}</Text>
-    <View style={styles.container}>
-      <RenderHTML
-        contentWidth={width}
-        // renderers={renderers}
+    <TouchableOpacity style={styles.postCard}>
+      <View style={styles.postHeader}>
+        <Avatar
+          rounded
+          source={{ uri: post.User.pic }}
+          size="medium"
+          containerStyle={styles.avatar}
+        />
+        <Text style={styles.postTitle}>{post.title}</Text>
+      </View>
+      <Text style={styles.postMeta}>{post.College.name}</Text>
+      <Text style={styles.postMeta}>@{post.User.username}</Text>
+      <View style={styles.container}>
+        <RenderHTML
+          contentWidth={width}
+          // renderers={renderers}
 
-        renderersProps={renderersProps}
-        source={{html:post.content}}
-        tagsStyles={tagsStyles}
-        defaultTextProps={{
-          selectable: true,
-        }}
-      />
-    </View>
-    <View style={styles.postFooter}>
-      <Text style={styles.postLikes}>{post.likes} likes</Text>
-      <Text style={styles.postComments}>{post._count?.Comments} comments</Text>
-    </View>
-  </TouchableOpacity>
-);
+          renderersProps={renderersProps}
+          source={{ html: post.content }}
+          tagsStyles={tagsStyles}
+          defaultTextProps={{
+            selectable: true,
+          }}
+        />
+      </View>
+      <View style={styles.postFooter}>
+        <Text style={styles.postLikes}>{post.likes} likes</Text>
+        <Text style={styles.postComments}>
+          {post._count?.Comments} comments
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
 
-const handlePostSubmit = async ({ title, content, community }) => {
-  try {
-    const response = await axios.post(
-      '/api/post/create',
-      {
-        title: title,
-        content: content,
-        collegeId: community,
-      },
-      { withCredentials: true }
-    );
+  const handlePostSubmit = async ({ title, content, community }) => {
+    try {
+      const response = await axios.post(
+        "/api/post/create",
+        {
+          title: title,
+          content: content,
+          collegeId: community,
+        },
+        { withCredentials: true }
+      );
 
-    if (response.status === 200) {
-      // Show success message
-      Alert.alert("Post Created", "Your post has been created successfully!");
-
-      // You can trigger any additional UI updates or navigation here.
-      // For example, if using React Navigation, navigate to the post list or home screen.
-      // navigation.goBack();  // Use navigation if needed (with React Navigation)
-    } else {
-      // Handle unexpected response status
-      Alert.alert("Error", "Something went wrong. Please try again.");
+      Alert.alert("Success", "Post created successfully");
+    } catch (error) {
+      console.error("Error creating post:", error);
+      Alert.alert(
+        "Error",
+        "There was an issue creating your post. Please try again."
+      );
     }
-  } catch (error) {
-    console.error("Error creating post:", error);
-    // Show error message
-    Alert.alert("Error", "There was an issue creating your post. Please try again.");
-  }
-};
+  };
 
   if (loading) {
     return (
@@ -198,6 +187,7 @@ const handlePostSubmit = async ({ title, content, community }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* <View style={styles.createPostContainer}></View> */}
       <CreatePost communities={communities} onSubmit={handlePostSubmit} />
       <FlatList
         data={posts}
@@ -206,6 +196,18 @@ const handlePostSubmit = async ({ title, content, community }) => {
         onEndReached={() => hasMore && fetchPosts()}
         onEndReachedThreshold={0.1}
         ListFooterComponent={hasMore ? <ActivityIndicator /> : null}
+        ListEmptyComponent={
+          <View style={styles.emptyListContainer}>
+            <Text style={styles.emptyListText}>No posts to show</Text>
+          </View>
+        }
+        ListHeaderComponent={
+          <View>
+            <CreatePost communities={communities} onSubmit={handlePostSubmit} />
+          </View>
+        }
+        contentContainerStyle={{ paddingTop: 0 }}
+        style={styles.flatList}
       />
     </SafeAreaView>
   );
