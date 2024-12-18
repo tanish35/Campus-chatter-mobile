@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  FlatList,
   View,
   Text,
   StyleSheet,
@@ -16,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
 import { useWindowDimensions } from "react-native";
 import CreatePost from "./CreatePost";
+import { VirtualizedList } from "react-native"; // Import VirtualizedList
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -72,12 +72,12 @@ const Posts = () => {
     }
   };
 
-  useEffect(() => {
-    setPosts([]);
-    setPage(1);
-    setHasMore(true);
-    fetchPosts(1);
-  }, [selectedCommunity]);
+  // useEffect(() => {
+  //   setPosts([]);
+  //   setPage(1);
+  //   setHasMore(true);
+  //   fetchPosts(1);
+  // }, [selectedCommunity]);
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -97,22 +97,6 @@ const Posts = () => {
     fetchCommunities();
     fetchPosts();
   }, []);
-
-  // const renderers = {
-  //   img: (htmlAttribs) => {
-  //     const { src } = htmlAttribs;
-  //     return (
-  //       <Image
-  //         source={{ uri: src }}
-  //         style={{
-  //           width: width * 0.9,
-  //           height: 'auto',
-  //           resizeMode: 'contain',
-  //         }}
-  //       />
-  //     );
-  //   },
-  // };
 
   const renderersProps = {
     img: {
@@ -136,8 +120,6 @@ const Posts = () => {
       <View style={styles.container}>
         <RenderHTML
           contentWidth={width}
-          // renderers={renderers}
-
           renderersProps={renderersProps}
           source={{ html: post.content }}
           tagsStyles={tagsStyles}
@@ -187,12 +169,14 @@ const Posts = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <View style={styles.createPostContainer}></View> */}
       <CreatePost communities={communities} onSubmit={handlePostSubmit} />
-      <FlatList
+
+      <VirtualizedList
         data={posts}
         renderItem={renderPost}
         keyExtractor={(item) => item.post_id.toString()}
+        getItemCount={() => posts.length}
+        getItem={(data, index) => data[index]}
         onEndReached={() => hasMore && fetchPosts()}
         onEndReachedThreshold={0.1}
         ListFooterComponent={hasMore ? <ActivityIndicator /> : null}
