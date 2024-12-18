@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import RenderHTML from "react-native-render-html";
 import { useWindowDimensions } from "react-native";
 import CreatePost from "./CreatePost";
-import { VirtualizedList } from "react-native"; // Import VirtualizedList
+import { VirtualizedList } from "react-native";
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -27,7 +27,6 @@ const Posts = () => {
   const [page, setPage] = useState(1);
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
-
   const tagsStyles = {
     a: { color: "blue", textDecorationLine: "underline" },
     b: { fontWeight: "bold" },
@@ -71,13 +70,6 @@ const Posts = () => {
       setLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   setPosts([]);
-  //   setPage(1);
-  //   setHasMore(true);
-  //   fetchPosts(1);
-  // }, [selectedCommunity]);
 
   useEffect(() => {
     const fetchCommunities = async () => {
