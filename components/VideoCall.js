@@ -7,17 +7,16 @@ const VideoCall = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const roomUrl = 'https://campusify.daily.co/tanish69'; // Hardcoded room URL
-  const displayName = "Tanish"; // Set display name as per your requirement
+  const roomUrl = 'https://campusify.daily.co/tanish69'; 
+  const displayName = "Tanish"; 
 
   useEffect(() => {
-    // Initialize the Daily call object
     callRef.current = Daily.createCallObject({
       url: roomUrl,
       allowMultipleCallInstances: true,
     });
 
-    // Join the call with the user name
+   
     callRef.current
       .join({ userName: displayName })
       .then(() => {
